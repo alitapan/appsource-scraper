@@ -30,12 +30,12 @@ class Spider:
         categories = [web_apps, add_ins_dynamics_365, add_ins_microsoft_365, add_ins_power_bi_apps, add_ins_power_bi_visuals, power_apps]
 
         # Scrape through all the categories in the app store
-        for i in range(len(categories)):
-            self.crawl_apps(categories[i], data, driver, missing, i)
+        # for i in range(len(categories)):
+        #     self.crawl_apps(categories[i], data, driver, missing, i)
 
         # For testing
-        # test = "https://appsource.microsoft.com/en-us/marketplace/apps?product=web-apps&category=finance&page=1&subcategories=accounting"
-        # self.crawl_apps(test, data, driver, missing, 0)
+        test = "https://appsource.microsoft.com/en-us/marketplace/apps?product=web-apps&category=finance&page=1&subcategories=accounting"
+        self.crawl_apps(test, data, driver, missing, 0)
 
         # Finally scrape through the missing apps
         self.crawl_missing(data, missing, driver)
@@ -123,12 +123,12 @@ options = Options()
 options.headless = True
 driver = webdriver.Firefox(options = options)
 
-# crawl_date = str(datetime.now()).split(" ")[0]
-# start_time = str(datetime.now()).split(" ")[1]
+crawl_date = str(datetime.now()).split(" ")[0]
+start_time = str(datetime.now()).split(" ")[1]
 
 # Start crawling
 Spider(driver, data)
-
+filename = crawl_date + ".csv"
 # Save to pandas dataframe
 df = pd.DataFrame(data, columns=["app_name", "app_developer", "app_rating", "app_id", "app_url", "earliest_review_date", "review_url", "review_date", "review_rating", "reviewer_name", "review_header", "review_text", "crawl_date"])
-df.to_csv(data/appsource_data.csv, index=False, encoding='utf-8')
+df.to_csv('data/' + filename , index=False, encoding='utf-8')
