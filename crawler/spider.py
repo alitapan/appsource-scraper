@@ -1,7 +1,5 @@
 # import Libraries
 import sys
-import urllib.request
-from bs4 import BeautifulSoup
 from selenium import webdriver
 from datetime import datetime
 import time
@@ -10,6 +8,7 @@ from app_scraper import AppScraper
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.firefox.options import Options
 
 class Spider:
     # TODO: Implement missing
@@ -30,14 +29,16 @@ class Spider:
         missing = []
         categories = [web_apps, add_ins_dynamics_365, add_ins_microsoft_365, add_ins_power_bi_apps, add_ins_power_bi_visuals, power_apps]
 
+        # Scrape through all the categories in the app store
         for i in range(len(categories)):
             self.crawl_apps(categories[i], data, driver, missing, i)
 
-#        For testing
-#        self.crawl_apps(add_ins_power_bi_apps, data, driver, missing, 0)
+        # Finally scrape through the missing apps
+        self.crawl_missing(data, missing, driver)
 
-        # TODO: IMPLEMENT MISSING
-        # self.crawl_missing()
+        # For testing
+        # test = "https://appsource.microsoft.com/en-us/marketplace/apps?product=web-apps&category=finance&page=1&subcategories=accounting"
+        # self.crawl_apps(test, data, driver, missing, 0)
 
 
     def crawl_apps(self, url, data, driver, missing, option):
@@ -50,7 +51,6 @@ class Spider:
                 )
         except:
                 # TODO: Keep track of missing categories
-
                 return
 
         on_last_page = False
@@ -89,14 +89,40 @@ class Spider:
                         time.sleep(1)
                         break
 
+    def crawl_missing(self, data, missing, driver):
 
+        # Save to a different list so doesn't run infinetly if there is a problem
+        missing_apps = missing
+        for app_url in missing_apps:
+
+            # Open and switch to a new tab
+            driver.execute_script("window.open('');")
+            driver.switch_to.window(driver.window_handles[1])
+            time.sleep(1)
+
+            # Scrape the app
+            s = AppScraper(data, driver, app_url, missing)
+
+            # Close the tab and switch back
+            driver.close()
+            driver.switch_to.window(driver.window_handles[0])
+
+        # Print the missing apps for cross-checking
+        print(missing)
+
+
+# Initialize browser
 data = []
+options = Options()
+options.headless = True
 driver = webdriver.Firefox()
-crawl_date = str(datetime.now()).split(" ")[0]
-start_time = str(datetime.now()).split(" ")[1]
+
+# crawl_date = str(datetime.now()).split(" ")[0]
+# start_time = str(datetime.now()).split(" ")[1]
+
+# Start crawling
 Spider(driver, data)
 
 # Save to pandas dataframe
-df = pd.DataFrame(data, columns=["app_name", "app_developer", "app_rating", "app_id", "app_url", "review_date", "review_rating", "reviewer_name", "review_header", "review_text", "crawl_date"])
-
-df.to_csv(crawl_date, index=False, encoding='utf-8')
+df = pd.DataFrame(data, columns=["app_name", "app_developer", "app_rating", "app_id", "app_url", "earliest_review_date", "review_url", "review_date", "review_rating", "reviewer_name", "review_header", "review_text", "crawl_date"])
+df.to_csv(data/appsource_data.csv, index=False, encoding='utf-8')

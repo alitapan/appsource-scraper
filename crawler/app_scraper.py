@@ -1,5 +1,4 @@
 # import Libraries
-import urllib.request
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -32,7 +31,11 @@ class AppScraper:
             if(" 0 User Reviews" in check_reviews):
                 has_reviews = False
             # Go to the reviews tab
-            review_tab_url = driver.find_elements_by_xpath("//div[@class='tabContainer']//a[@class='defaultTab']")[0].get_attribute("href")
+            check_tab = driver.find_elements_by_xpath("//div[@class='tabContainer']//a[@class='defaultTab']//label")[0].text
+            if("Plans" in check_tab or "Pricing" in check_tab):
+                review_tab_url = driver.find_elements_by_xpath("//div[@class='tabContainer']//a[@class='defaultTab']")[1].get_attribute("href")
+            else:
+                review_tab_url = driver.find_elements_by_xpath("//div[@class='tabContainer']//a[@class='defaultTab']")[0].get_attribute("href")
             driver.get(review_tab_url)
 
             # Let the page load
