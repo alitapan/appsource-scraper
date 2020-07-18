@@ -56,7 +56,11 @@ class Spider:
         on_last_page = False
         while(not on_last_page):
             pages = driver.find_elements_by_xpath("//div[@class='paginationContainer']//li//a")
-            current_tab = driver.find_elements_by_xpath("//div[@class='paginationContainer']//li[@class='f-active']//a")[0]
+            try:
+                current_tab = driver.find_elements_by_xpath("//div[@class='paginationContainer']//li[@class='f-active']//a")[0]
+            except:
+                on_last_page = True
+
             apps = driver.find_elements_by_xpath("//div[@class='spza_filteredTileContainer']//div[@class='spza_tileWrapper']//a")
             # Go through each app
             for app in apps:
@@ -115,7 +119,7 @@ class Spider:
 data = []
 options = Options()
 options.headless = True
-driver = webdriver.Firefox(option = options)
+driver = webdriver.Firefox(options = options)
 
 # crawl_date = str(datetime.now()).split(" ")[0]
 # start_time = str(datetime.now()).split(" ")[1]
