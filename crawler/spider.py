@@ -33,12 +33,12 @@ class Spider:
         for i in range(len(categories)):
             self.crawl_apps(categories[i], data, driver, missing, i)
 
-        # Finally scrape through the missing apps
-        self.crawl_missing(data, missing, driver)
-
         # For testing
         # test = "https://appsource.microsoft.com/en-us/marketplace/apps?product=web-apps&category=finance&page=1&subcategories=accounting"
         # self.crawl_apps(test, data, driver, missing, 0)
+
+        # Finally scrape through the missing apps
+        self.crawl_missing(data, missing, driver)
 
 
     def crawl_apps(self, url, data, driver, missing, option):
@@ -81,17 +81,19 @@ class Spider:
 
 
             # Check if on last page
-            if(pages[len(pages) - 1] == current_tab):
-                on_lat_page = True
-                return
+            if(not on_last_page):
+                if(pages[len(pages) - 1] == current_tab):
+                    on_last_page = True
+                    return
 
-            # If not on last page, move on to the next review page
-            else:
-                for i in range(len(pages)):
-                    if(pages[i] == current_tab):
-                        pages[i+1].click()
-                        time.sleep(1)
-                        break
+                # If not on last page, move on to the next review page
+                else:
+                    for i in range(len(pages)):
+                        if(pages[i] == current_tab):
+                            pages[i+1].click()
+                            time.sleep(1)
+                            break
+
 
     def crawl_missing(self, data, missing, driver):
 
