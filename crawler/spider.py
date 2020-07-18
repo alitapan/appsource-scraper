@@ -11,7 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.options import Options
 
 class Spider:
-    # TODO: Implement missing
+
     def __init__(self, driver, data):
 
         # List for skipped apps
@@ -115,7 +115,7 @@ class Spider:
 data = []
 options = Options()
 options.headless = True
-driver = webdriver.Firefox()
+driver = webdriver.Firefox(option = options)
 
 # crawl_date = str(datetime.now()).split(" ")[0]
 # start_time = str(datetime.now()).split(" ")[1]
