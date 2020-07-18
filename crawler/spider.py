@@ -31,12 +31,12 @@ class Spider:
 
         # Scrape through all the categories in the app store
         # for i in range(len(categories)):
+        #     print("Finished a category")
         #     self.crawl_apps(categories[i], data, driver, missing, i)
 
         # For testing
         test = "https://appsource.microsoft.com/en-us/marketplace/apps?product=web-apps&category=finance&page=1&subcategories=accounting"
         self.crawl_apps(test, data, driver, missing, 0)
-
         # Finally scrape through the missing apps
         self.crawl_missing(data, missing, driver)
 
@@ -54,7 +54,9 @@ class Spider:
                 return
 
         on_last_page = False
+        page_number = 0
         while(not on_last_page):
+            page_number = page_number + 1
             pages = driver.find_elements_by_xpath("//div[@class='paginationContainer']//li//a")
             try:
                 current_tab = driver.find_elements_by_xpath("//div[@class='paginationContainer']//li[@class='f-active']//a")[0]
@@ -79,6 +81,7 @@ class Spider:
                 driver.close()
                 driver.switch_to.window(driver.window_handles[0])
 
+            print("Finished page", str(page_number), "of category", str(option))
 
             # Check if on last page
             if(not on_last_page):
@@ -128,7 +131,7 @@ start_time = str(datetime.now()).split(" ")[1]
 
 # Start crawling
 Spider(driver, data)
-filename = crawl_date + ".csv"
+filename = crawl_date + "-" + start_time + ".csv"
 # Save to pandas dataframe
 df = pd.DataFrame(data, columns=["app_name", "app_developer", "app_rating", "app_id", "app_url", "earliest_review_date", "review_url", "review_date", "review_rating", "reviewer_name", "review_header", "review_text", "crawl_date"])
 df.to_csv('data/' + filename , index=False, encoding='utf-8')
