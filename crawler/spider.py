@@ -35,7 +35,7 @@ class Spider:
         #     self.crawl_apps(categories[i], data, driver, missing, i)
 
         # For testing
-        test = "https://appsource.microsoft.com/en-us/marketplace/apps?product=web-apps&category=finance&page=1&subcategories=accounting"
+        test = "https://appsource.microsoft.com/en-us/marketplace/apps?category=operations&page=1&subcategories=asset-production-management%3Bdemand-forecasting%3Binformation-management-connectivity%3Bplanning-purchasing-reporting%3Bquality-service-management%3Bsales-order-management%3Btransportation-warehouse-management"
         self.crawl_apps(test, data, driver, missing, 0)
         # Finally scrape through the missing apps
         self.crawl_missing(data, missing, driver)
@@ -55,6 +55,10 @@ class Spider:
 
         on_last_page = False
         page_number = 0
+
+        # For storing apps on the page
+        list_of_apps = []
+
         while(not on_last_page):
             page_number = page_number + 1
             pages = driver.find_elements_by_xpath("//div[@class='paginationContainer']//li//a")
@@ -67,27 +71,29 @@ class Spider:
             # Go through each app
             for app in apps:
 
-                # Store the app URL
+                # # Store the app URL
+                # app_url = app.get_attribute("href")
+                #
+                # # Open and switch to a new tab
+                # driver.execute_script("window.open('');")
+                # driver.switch_to.window(driver.window_handles[1])
+                # time.sleep(1)
+                # # Scrape the app
+                # s = AppScraper(data, driver, app_url, missing, option)
+                #
+                # # Close the tab and switch back
+                # driver.close()
+                # driver.switch_to.window(driver.window_handles[0])
+
+                # Store every app in the page to the list
                 app_url = app.get_attribute("href")
+                list_of_apps.append(app_url)
 
-                # Open and switch to a new tab
-                driver.execute_script("window.open('');")
-                driver.switch_to.window(driver.window_handles[1])
-                time.sleep(1)
-                # Scrape the app
-                s = AppScraper(data, driver, app_url, missing, option)
-
-                # Close the tab and switch back
-                driver.close()
-                driver.switch_to.window(driver.window_handles[0])
-
-            print("Finished page", str(page_number), "of category", str(option))
 
             # Check if on last page
             if(not on_last_page):
                 if(pages[len(pages) - 1] == current_tab):
                     on_last_page = True
-                    return
 
                 # If not on last page, move on to the next review page
                 else:
@@ -97,6 +103,9 @@ class Spider:
                             time.sleep(1)
                             break
 
+        # Iterate over the stored list
+        for app_url in list_of_apps:
+            AppScraper(data, driver, app_url, missing, option)
 
     def crawl_missing(self, data, missing, driver):
 
@@ -134,4 +143,5 @@ Spider(driver, data)
 filename = crawl_date + "-" + start_time + ".csv"
 # Save to pandas dataframe
 df = pd.DataFrame(data, columns=["app_name", "app_developer", "app_rating", "app_id", "app_url", "earliest_review_date", "review_url", "review_date", "review_rating", "reviewer_name", "review_header", "review_text", "crawl_date"])
-df.to_csv('data/' + filename , index=False, encoding='utf-8')
+df.to_csv(filename , index=False, encoding='utf-8')
+driver.quit()

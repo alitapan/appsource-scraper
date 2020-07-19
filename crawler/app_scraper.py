@@ -96,6 +96,7 @@ class AppScraper:
             else:
                 crawl_date = datetime.now()
                 data.append((app_name, app_developer, app_rating, app_id, app_page_url, "N/A", review_tab_url, "N/A", "0", "N/A", "N/A", "N/A", crawl_date))
+                print("Finished scraping", app_name)
                 return
 
     def scrape_reviews(self, driver, review_tab_url, data, app_page_url, app_name, app_developer, app_rating, app_id):
