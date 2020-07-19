@@ -177,6 +177,7 @@ class AppScraper:
         for i in range(len(review_rating_list)):
             data.append((app_name, app_developer, app_rating, app_id, app_page_url, review_date_list[-1], review_tab_url, review_date_list[i], review_rating_list[i], reviewer_name_list[i], review_header_list[i], review_text_list[i], crawl_date_list[i]))
 
+        print("Finished scraping", app_name)
         return
 
     def option_check(self, option, driver):

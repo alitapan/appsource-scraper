@@ -16,7 +16,7 @@ class Spider:
 
         # List for skipped apps
         missing = []
-
+        print("Initializing Spider...")
         # main_url = 'https://appsource.microsoft.com/en-us/marketplace/apps'
 
         # Main category URLs
@@ -42,7 +42,7 @@ class Spider:
 
 
     def crawl_apps(self, url, data, driver, missing, option):
-
+        print("Scraping categories")
         driver.get(url)
 
         try:
@@ -144,4 +144,5 @@ filename = crawl_date + "-" + start_time + ".csv"
 # Save to pandas dataframe
 df = pd.DataFrame(data, columns=["app_name", "app_developer", "app_rating", "app_id", "app_url", "earliest_review_date", "review_url", "review_date", "review_rating", "reviewer_name", "review_header", "review_text", "crawl_date"])
 df.to_csv(filename , index=False, encoding='utf-8')
+print("Done!")
 driver.quit()
